@@ -3,6 +3,7 @@ import pandas as pd
 from modules.data_manager import SheetManager
 from modules.visualizer import SkinVisualizer
 from pages.form.normal import show_normal_form
+from pages.about.me import show_profile
 
 # --- [함수 1] 구글 응답 결과 요약 보고서 (매개변수 df 추가) ---
 def render_business_summary(df): # (수정) df를 인자로 받도록 변경
@@ -78,7 +79,7 @@ def main():
 
     # 사이드바 메뉴
     st.sidebar.title("🧭 Navigation")
-    menu = st.sidebar.selectbox("Go to", ["Home", "Normal Survey", "AI Prediction"])
+    menu = st.sidebar.selectbox("Go to", ["Home", "Normal Survey", "AI Prediction", "Aboutme"])
 
     if menu == "Home":
         st.write("# 🏠 Dashboard Home")
@@ -96,6 +97,12 @@ def main():
 
     elif menu == "AI Prediction":
         st.write("## 🤖 AI 분석 리포트 (준비 중)")
+    
+    elif menu == "Aboutme":
+        st.write("page/about/me.py가 노출됩니다.")
+        show_profile()
+
+    
 
 if __name__ == "__main__":
     main()
