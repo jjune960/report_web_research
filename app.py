@@ -7,21 +7,35 @@ from pages.about.me import show_profile
 from pages.sns_banners import show_sns_banners
 
 # --- [함수 1] 구글 응답 결과 요약 보고서 (매개변수 df 추가) ---
-def render_business_summary(df): # (수정) df를 인자로 받도록 변경
+def render_business_summary(df, questions_data=None):  # (수정) df를 인자로 받도록 변경
     st.subheader("📝 문항별 응답 요약 (Top Selection)")    
     
     if df.empty:
         st.info("데이터가 충분하지 않습니다.")
         return
 
+    # 질문관리 시트 기반으로 "문항번호 -> 질문내용/질문유형" 매핑
+    q_text_by_num = {}
+    q_type_by_num = {}
+    if questions_data:
+        for q in questions_data:
+            try:
+                q_num = int(q.get("문항번호"))
+            except Exception:
+                continue
+            q_text_by_num[q_num] = str(q.get("질문내용") or "").strip()
+            q_type_by_num[q_num] = str(q.get("질문유형") or "").strip()
+
     summary_list = []
     
     # 12개 질문에 대해 순회 (인덱스 1부터 시작)
     for i in range(1, len(df.columns)):
-        col_name = df.columns[i]
+        col_name = df.columns[i]  # 응답결과 시트의 컬럼명(예: "1번 응답")
+        q_text = q_text_by_num.get(i) or col_name
+        q_type = q_type_by_num.get(i, "")
         
         # 주관식/객관식 판별 및 통계 로직
-        if "주로 사용" in col_name or "바라는 점" in col_name:
+        if q_type == "text":
             top_val = "주관식 응답"
             count = f"{df[col_name].nunique()}개의 다양한 의견"
         else:
@@ -37,7 +51,7 @@ def render_business_summary(df): # (수정) df를 인자로 받도록 변경
 
         summary_list.append({
             "문항 번호": f"Q{i}",
-            "질문 내용 요약": col_name[:25] + "..." if len(col_name) > 25 else col_name,
+            "질문 내용 요약": q_text,
             "최다 선택 답변": top_val,
             "응답 수": count
         })
@@ -73,9 +87,11 @@ def main():
     # 데이터 로드
     try:
         db = SheetManager()
+        questions_data = db.get_questions()
         df = db.get_all_responses_df()
     except Exception as e:
         st.error(f"데이터 연결 실패: {e}")
+        questions_data = []
         df = pd.DataFrame() 
 
     # 사이드바 메뉴
@@ -87,7 +103,7 @@ def main():
         
         if not df.empty:
             # (수정) 함수 호출 시 로드한 df를 전달합니다.
-            render_business_summary(df) 
+            render_business_summary(df, questions_data) 
             st.write("---")
             render_visual_dashboard(df)
         else:
