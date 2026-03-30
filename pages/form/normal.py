@@ -14,7 +14,7 @@ def show_normal_form():
         st.error(f"데이터 로드 실패: {e}")
         return
 
-    st.title("📋 피부 고민 설문조사")
+    st.title("📋 일본 여행 취향 설문조사")
     user_id = st.text_input("연락처 또는 이메일", placeholder="중복 참여 확인용")
 
     with st.form("survey_form"):

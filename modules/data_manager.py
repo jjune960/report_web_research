@@ -1,5 +1,5 @@
 # modules/data_manager.py
-from modules.auth_utils import get_gspread_client, get_sheet_id
+from modules.auth_utils_env import get_gspread_client, get_sheet_id
 import pandas as pd
 
 class SheetManager:

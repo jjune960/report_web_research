@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from modules.data_manager import SheetManager
-from modules.visualizer import SkinVisualizer
+from modules.visualizer import TravelVisualizer
 from pages.form.normal import show_normal_form
 from pages.about.me import show_profile
 
@@ -47,13 +47,13 @@ def render_business_summary(df): # (수정) df를 인자로 받도록 변경
 # --- [함수 2] 시각화 대시보드 ---
 def render_visual_dashboard(df):
     st.subheader("📊 실시간 데이터 시각화")
-    viz = SkinVisualizer(df)
+    viz = TravelVisualizer(df)
     
     col1, col2 = st.columns(2)
     with col1:
         viz.plot_target_distribution()
     with col2:
-        viz.plot_skin_concerns()
+        viz.plot_travel_concerns()
         
     st.divider()
     viz.plot_visit_vs_reason()
@@ -67,7 +67,7 @@ def render_visual_dashboard(df):
 
 # --- 메인 실행부 ---
 def main():
-    st.set_page_config(page_title="Skin AI Analysis", layout="wide")
+    st.set_page_config(page_title="Japan Travel AI Analysis", layout="wide")
 
     # 데이터 로드
     try:

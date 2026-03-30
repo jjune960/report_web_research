@@ -2,7 +2,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-class SkinVisualizer:
+class TravelVisualizer:
     def __init__(self, df):
         self.df = df
         self.cols = df.columns
@@ -13,7 +13,7 @@ class SkinVisualizer:
         fig = px.pie(self.df, names=self.cols[1], hole=0.4, color_discrete_sequence=px.colors.sequential.RdBu)
         st.plotly_chart(fig, use_container_width=True)
 
-    def plot_skin_concerns(self):
+    def plot_travel_concerns(self):
         st.markdown("##### 2. 항공권을 고를 때 가장 중요하게 보는 것은?")
         # 다중 선택(Q3) 처리
         concerns = self.df[self.cols[3]].str.get_dummies(sep=', ').sum().sort_values()
