@@ -7,8 +7,11 @@ class SheetManager:
         self.client = get_gspread_client()
         self.sheet_id = get_sheet_id()
         
+        if not self.sheet_id:
+            raise Exception("GOOGLE_SHEET_ID가 설정되지 않았습니다. Streamlit Cloud secrets에 추가해 주세요.")
+
         if not self.client:
-            raise Exception("구글 클라이언트 인증 실패")
+            raise Exception("구글 클라이언트 인증 실패 (gcp_service_account 및 private_key 형식 확인 필요)")
             
         self.spreadsheet = self.client.open_by_key(self.sheet_id)
         self.q_sheet_name = q_sheet
