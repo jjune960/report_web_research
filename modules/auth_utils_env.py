@@ -11,20 +11,21 @@ def get_gspread_client():
         try:
             account = dict(st.secrets["gcp_service_account"])
 
-            required_keys = [
+            # 필수 키만 엄격히 체크 (일부 필드는 gspread/Google auth에서 옵션일 수 있음)
+            essential_keys = [
                 "type",
-                "project_id",
-                "private_key_id",
                 "private_key",
                 "client_email",
-                "client_id",
                 "auth_uri",
                 "token_uri",
-                "auth_provider_x509_cert_url",
                 "client_x509_cert_url",
             ]
 
-            missing = [k for k in required_keys if not account.get(k)]
+            def is_missing(k: str) -> bool:
+                v = account.get(k)
+                return v is None or (isinstance(v, str) and not v.strip())
+
+            missing = [k for k in essential_keys if is_missing(k)]
             if missing:
                 # 비밀 값 자체는 출력하지 않고 누락 키만 알려줌
                 st.error(f"secrets 설정 누락: gcp_service_account의 {missing} 필드가 비어있습니다.")
@@ -32,7 +33,8 @@ def get_gspread_client():
 
             # Streamlit Cloud에서 private_key가 "\\n"으로 저장되는 경우 개행 정규화
             pk = account.get("private_key")
-            if isinstance(pk, str) and ("\\n" in pk) and ("\n" not in pk):
+            if isinstance(pk, str):
+                # Cloud 입력 과정에서 "\\n"로 들어오는 경우가 잦아서 무조건 변환 처리
                 account["private_key"] = pk.replace("\\n", "\n")
 
             return gspread.service_account_from_dict(account)
